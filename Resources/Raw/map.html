@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* This will define the height of the map element */
+        #map {
+            height: 400px; /* Height set to 400px */
+            width: 100%;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map and set the view to a starting location
+        const map = L.map('map').setView([51.505, -0.09], 13);
+
+        // Add a tile layer (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Live location tracking
+        function onLocationFound(e) {
+            const radius = e.accuracy / 2;
+
+            L.marker(e.latlng).addTo(map)
+                .bindPopup(`You are within ${radius} meters of this point`).openPopup();
+
+            L.circle(e.latlng, radius).addTo(map);
+        }
+
+        function onLocationError(e) {
+            alert(e.message);
+        }
+
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+
+        // Start location tracking
+        map.locate({ setView: true, maxZoom: 16 });
+
+        // Allow pinning a location
+        map.on('click', function (e) {
+            L.marker([e.latlng.lat, e.latlng.lng]).addTo(map)
+                .bindPopup(`Pinned Location:<br>Latitude: ${e.latlng.lat}<br>Longitude: ${e.latlng.lng}`)
+                .openPopup();
+        });
+    </script>
+</body>
+</html>
